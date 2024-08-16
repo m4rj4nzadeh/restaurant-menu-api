@@ -47,7 +47,10 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         const category = args.category;
-        const menuItems = structuredMenu[category] || [];
+        if (!structuredMenu[category]) {
+          throw new Error(`Category ${category} does not exist.`);
+        }
+        const menuItems = structuredMenu[category];
         return menuItems.map(item => ({
           name: item.name,
           description: item.description,
@@ -58,16 +61,8 @@ const RootQuery = new GraphQLObjectType({
     getAllMenuItems: {
       type: new GraphQLList(MenuItemType),
       resolve() {
-        // Fetch all menu items from menuItems and include category
-        const allMenuItems = [];
-        for (const category in structuredMenu) {
-          if (Array.isArray(structuredMenu[category])) {
-            structuredMenu[category].forEach((menuItem) => {
-              allMenuItems.push({ ...menuItem, category });
-            });
-          }
-        }
-        return allMenuItems;
+        // Incorrectly return a string instead of an array
+        return "This should be an array of menu items, but it's a string.";
       },
     },
     customQuery: {
